@@ -1,15 +1,18 @@
-#!/usr/bin/env python
-""" dialogConversation.py - (C) International Business Machines 2016
- --------------------------------------------------------------
- Start and execute conversation with the a Dialog instance
- @author hkomine@jp.ibm.com
-"""
+'''
+dialogConversation.py - (C) International Business Machines 2016
+--------------------------------------------------------------
+Start and execute conversation with the a Dialog instance
+ 
+Created on 2016/05/17
+@author: hkomine
+'''
+
 import sys
 import getopt
-import dialogAPI
+import json
 import dialogConstants
-import urllib
 import codecs
+from watson_developer_cloud import DialogV1 as Dialog
 
 dialog_id=''
 client_id=''
@@ -18,14 +21,15 @@ DEBUG=False
 VERBOSE=False
 
 def usage():
-    print('dialogConversation.py -a <dialog_id> -l <client id> -o <conversation id> -d [enable debug output for script] -v [enable verbose output for curl]')
+    print('dialogConversation.py -a <dialog_id> -l <client id> -o <conversation id> -d [enable debug output for script]')
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:],"hdva:l:o:",["dialog_id=","client_id=","conversation_id="])
+    opts, args = getopt.getopt(sys.argv[1:],"hda:l:o:",["dialog_id=","client_id=","conversation_id="])
 except getopt.GetoptError as err:
-    print str(err)
-    print usage()
+    print(str(err))
+    print(usage())
     sys.exit(2)
+    
 for opt, arg in opts:
     if opt == '-h':
         usage()
@@ -38,20 +42,26 @@ for opt, arg in opts:
         conversation_id = arg
     elif opt == '-d':
         DEBUG = True
-    elif opt == '-v':
-        VERBOSE = True
 
+if not dialog_id:
+    print('dialog_id is missing.')
+    usage()
+    sys.exit(2)
+    
 try:
     sys.stdout.write('Watson Dialog conversation app. (Ctrl-z for terminating.)\n')
+    
+    # get dialog object 
+    dialog = Dialog(username=dialogConstants.getUsername(), password=dialogConstants.getPassword())   
     
     # check dialog_id and get from constant
     if dialog_id =='':
         dialog_id = dialogConstants.getDialogId()
     
     # start conversation to get client_id and conversation_id
-    res = dialogAPI.startConversation(dialog_id, client_id, conversation_id, DEBUG, VERBOSE)
+    res = dialog.conversation(dialog_id, '', client_id, conversation_id)
     if DEBUG:
-        print('Response: %s\n' % res)
+        sys.stdout.write('Response: \n%s\n' % json.dumps(res, indent=2))
 
     client_id = res['client_id']
     sys.stdout.write('client_id = %s\n' % (client_id))
@@ -70,10 +80,12 @@ try:
     for line in iter(sys.stdin.readline, ''):
         line = line.rstrip()
         if line != "":
-            enc_line = urllib.quote(line.encode('utf-8'))
-            res = dialogAPI.converse(dialog_id, client_id, conversation_id, enc_line, DEBUG, VERBOSE)
+            # send input message - encoding will be done in the SDK
+            res = dialog.conversation(dialog_id, line, client_id, conversation_id)
             if DEBUG:
-                print('Response: %s' % res)
+                sys.stdout.write('Response: \n%s\n' % json.dumps(res, indent=2))
+                sys.stdout.write('Your input was %s\n' % res['input'])
+                
             messages = res['response']
             for message in messages:
                 sys.stdout.write('Dialog> %s\n' % (message))
@@ -83,5 +95,5 @@ try:
     sys.stdout.write('Terminated.')
     
 except Exception as e:
-    print str(e)
+    sys.stdout.write(str(e))
     exit(1)

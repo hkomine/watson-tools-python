@@ -1,7 +1,7 @@
 '''
 dialogListDialogs.py - (C) International Business Machines 2016
 --------------------------------------------------------------
-Get Dialog accounts list
+Create Dialog account
 
 Created on 2016/05/17
 
@@ -14,14 +14,16 @@ import json
 import dialogConstants
 from watson_developer_cloud import DialogV1 as Dialog
 
+dialog_filepath=''
+name=''
 DEBUG=False
 VERBOSE=False
 
 def usage():
-    print('dialogListDialogs.py -d [enable debug output for script]')
+    print('dialogListDialog.py -f <dialog filepath> -n <dialog name> -d [enable debug output for script]')
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:],"hd",[])
+    opts, args = getopt.getopt(sys.argv[1:],"hdf:n:",["dialogfile=", "name="])
 except getopt.GetoptError as err:
     print(str(err))
     print(usage())
@@ -31,30 +33,28 @@ for opt, arg in opts:
     if opt == '-h':
         usage()
         sys.exit()
+    elif opt in ("-f", "---dialogfile"):
+        dialog_filepath = arg
+    elif opt in ("-n", "---name"):
+        name = arg
     elif opt == '-d':
         DEBUG = True
+
+if not dialog_filepath or not name:
+    print('Required argument missing.')
+    usage()
+    sys.exit(2)
 
 try:
     # get dialog object 
     dialog = Dialog(username=dialogConstants.getUsername(), password=dialogConstants.getPassword())
     
-    # list dialogs to get client_id and conversation_id
-    res = dialog.get_dialogs()
-    if DEBUG:
+    # create a dialog
+    sys.stdout.write('Creating dialog %s\n' % name)
+    with open(dialog_filepath, 'rb') as dialog_file:
+        res = dialog.create_dialog(dialog_file, name)
         sys.stdout.write('Response: \n%s\n' % json.dumps(res, indent=2))
-    
-    sys.stdout.write('Dialog accounts:\n')
-    sys.stdout.write('\tdialog_id,\tname\n')
-    dialogs = res['dialogs']
-    for dialog in dialogs:
-        sys.stdout.write('\t%s : %s\n' % (dialog['dialog_id'], dialog['name']))
 
-    sys.stdout.write('\n')
-    sys.stdout.write('Language packs accounts:\n')
-    sys.stdout.write('\tdialog_id,\tname\n')
-    language_packs = res['language_packs']
-    for language_pack in language_packs:
-        sys.stdout.write('\t%s : %s\n' % (language_pack['dialog_id'], language_pack['name']))
 
 except Exception as e:
     sys.stdout.write(str(e))
