@@ -50,7 +50,7 @@ if not trainingdata_filepath or not name or not language:
     
 try:   
     # create classifiers with the training data
-    natural_language_classifier = NaturalLanguageClassifier(username=nlcConstants.getUsername(), password=nlcConstants.getPassword())
+    natural_language_classifier = NaturalLanguageClassifier(url=nlcConstants.getUrl(), username=nlcConstants.getUsername(), password=nlcConstants.getPassword())
     with open(trainingdata_filepath, 'rb') as training_data:
         res = natural_language_classifier.create(training_data, name, language)
         sys.stdout.write('Response: \n%s\n' % json.dumps(res, indent=2))
