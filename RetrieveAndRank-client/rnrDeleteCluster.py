@@ -45,7 +45,7 @@ if not cluster_id:
 try:
     # list Solr config
     retrieve_and_rank = RetrieveAndRank(url=rnrConstants.getUrl(), username=rnrConstants.getUsername(), password=rnrConstants.getPassword())
-    res = retrieve_and_rank.list_collections(cluster_id)
+    res = retrieve_and_rank.delete_solr_cluster(cluster_id)
     sys.stdout.write('Response: \n%s\n' % json.dumps(res, indent=2))
 
 except Exception as e:
