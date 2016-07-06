@@ -36,7 +36,7 @@ for opt, arg in opts:
 
 try:
     # list classifiers to get classifier_id
-    natural_language_classifier = NaturalLanguageClassifier(username=nlcConstants.getUsername(), password=nlcConstants.getPassword())
+    natural_language_classifier = NaturalLanguageClassifier(url=nlcConstants.getUrl(), username=nlcConstants.getUsername(), password=nlcConstants.getPassword())
     res = natural_language_classifier.list()
     sys.stdout.write('Response: \n%s\n' % json.dumps(res, indent=2))
 

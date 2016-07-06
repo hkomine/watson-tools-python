@@ -45,7 +45,7 @@ try:
     sys.stdout.write('Watson Natural Language Classifier app. (Ctrl-z for terminating.)\n')
     
     # create classifiers with the training data
-    natural_language_classifier = NaturalLanguageClassifier(username=nlcConstants.getUsername(), password=nlcConstants.getPassword())
+    natural_language_classifier = NaturalLanguageClassifier(url=nlcConstants.getUrl(), username=nlcConstants.getUsername(), password=nlcConstants.getPassword())
 
     # set input encoding - change the encoding name according your platform
     sys.stdin  = codecs.getreader('shift_jis')(sys.stdin)

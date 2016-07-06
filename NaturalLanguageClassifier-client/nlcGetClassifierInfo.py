@@ -44,7 +44,7 @@ if not classifier_id:
     
 try:   
     # create classifiers with the training data
-    natural_language_classifier = NaturalLanguageClassifier(username=nlcConstants.getUsername(), password=nlcConstants.getPassword())
+    natural_language_classifier = NaturalLanguageClassifier(url=nlcConstants.getUrl(), username=nlcConstants.getUsername(), password=nlcConstants.getPassword())
 
     # get classifier information
     res = natural_language_classifier.status(classifier_id)
