@@ -3,7 +3,7 @@
 ## Scripts which run on Watson SDK
 The following code require Watson-Developer-Cloud Python SDK:
 
-Dialog-client
+NaturalLanguageClassifier-client
 * nlcClassify.py
 * nlcConstants.py
 * nlcCreateClassifier.py
@@ -11,7 +11,7 @@ Dialog-client
 * nlcGetClassifierInfo.py
 * nlcListClassifiers.py
 
-NaturalLanguageClassifier-client
+Dialog-client
 * dialogConstants.py
 * dialogConversation.py
 * dialogCreateDialog.py
